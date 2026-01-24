@@ -1,0 +1,698 @@
+openapi: 3.0.3
+info:
+  title: 离线文字转语音工具 API
+  description: |
+    离线TTS工具的RESTful API文档。
+
+    ## 功能概述
+    - 文本转语音生成
+    - 任务队列管理
+    - 生成历史记录查询
+    - 音频文件下载
+
+    ## 技术栈
+    - 后端: Python 3.12+ + FastAPI
+    - TTS引擎: edge-tts
+    - 数据库: SQLite + SQLAlchemy 2.0
+
+  version: 1.0.0
+  contact:
+    name: TTS API Support
+    email: support@tts-tool.local
+
+servers:
+  - url: http://localhost:8000
+    description: 本地开发服务器
+  - url: http://localhost:8000/api/v1
+    description: API v1端点
+
+tags:
+  - name: tts
+    description: 文本转语音生成相关操作
+  - name: queue
+    description: 任务队列管理
+  - name: history
+    description: 生成历史记录管理
+  - name: health
+    description: 健康检查和系统状态
+
+paths:
+  /api/v1/tts/generate:
+    post:
+      tags:
+        - tts
+      summary: 创建TTS生成任务
+      description: |
+        创建一个新的文本转语音生成任务并加入队列。
+
+        **验证规则**:
+        - text: 1-5000字符
+        - voice_name: 必须在预设音色列表中
+        - rate: 0.5-2.0
+        - pitch: 0.5-2.0
+        - volume: 0.0-1.0
+
+        **返回**:
+        - 成功: 返回任务对象和任务ID
+        - 队列满: 返回429错误
+        - 验证失败: 返回422错误
+      operationId: createTTSTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+            examples:
+              normal:
+                summary: 标准请求
+                value:
+                  text: "你好,世界!这是一个测试。"
+                  voice_name: "晓晓-女声"
+                  rate: 1.0
+                  pitch: 1.0
+                  volume: 1.0
+              fast:
+                summary: 快速语速
+                value:
+                  text: "快速朗读这段文字。"
+                  voice_name: "云扬-男声"
+                  rate: 1.5
+                  pitch: 1.0
+                  volume: 0.8
+      responses:
+        '201':
+          description: 任务创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              examples:
+                success:
+                  summary: 成功响应
+                  value:
+                    task_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    text: "你好,世界!"
+                    voice_name: "晓晓-女声"
+                    rate: 1.0
+                    pitch: 1.0
+                    volume: 1.0
+                    status: "queued"
+                    progress: 0.0
+                    file_path: null
+                    error_message: null
+                    created_at: "2026-01-24T12:00:00Z"
+                    started_at: null
+                    completed_at: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/QueueFull'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/tasks/{task_id}:
+    get:
+      tags:
+        - tts
+      summary: 获取任务详情
+      description: 根据任务ID获取任务的详细信息和当前状态
+      operationId: getTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: 成功获取任务详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      tags:
+        - tts
+      summary: 取消任务
+      description: |
+        取消指定的任务。
+        - 仅可以取消状态为"queued"的任务
+        - 正在处理中或已完成的任务无法取消
+      operationId: cancelTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: 任务已取消
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Task cancelled successfully"
+                  task_id:
+                    type: string
+                    format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: 任务无法取消(已开始处理或已完成)
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/tts/download/{task_id}:
+    get:
+      tags:
+        - tts
+      summary: 下载生成的音频文件
+      description: |
+        下载指定任务生成的MP3音频文件。
+        - 任务状态必须为"completed"
+        - 返回音频文件二进制数据
+      operationId: downloadAudio
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: 音频文件
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: 'attachment; filename="tts_a1b2c3d4_20260124_120000.mp3"'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '425':
+          description: 任务未完成
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "TaskNotReady"
+                message: "Task is still processing"
+                task_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                status: "processing"
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/queue/status:
+    get:
+      tags:
+        - queue
+      summary: 获取队列状态
+      description: 获取当前任务队列的统计信息,包括排队中、处理中和已完成的任务数量
+      operationId: getQueueStatus
+      responses:
+        '200':
+          description: 成功获取队列状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueStatus'
+              example:
+                queued_count: 3
+                processing_count: 1
+                completed_count: 15
+                current_task:
+                  task_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                  text: "正在处理中..."
+                  status: "processing"
+                  progress: 45.5
+                max_queue_size: 10
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/history:
+    get:
+      tags:
+        - history
+      summary: 获取生成历史
+      description: 获取最近20条已完成的TTS生成历史记录,按时间倒序排列
+      operationId: getHistory
+      parameters:
+        - name: limit
+          in: query
+          description: 返回记录数量(最多20条)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 20
+      responses:
+        '200':
+          description: 成功获取历史记录
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 20
+                  records:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HistoryRecord'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/history/{history_id}:
+    delete:
+      tags:
+        - history
+      summary: 删除历史记录
+      description: 删除指定的历史记录,同时删除关联的音频文件
+      operationId: deleteHistoryRecord
+      parameters:
+        - name: history_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 历史记录ID
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "History record deleted successfully"
+                  history_id:
+                    type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/history/clear:
+    delete:
+      tags:
+        - history
+      summary: 清空所有历史记录
+      description: 删除所有历史记录和关联的音频文件
+      operationId: clearHistory
+      responses:
+        '200':
+          description: 清空成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All history records cleared"
+                  deleted_count:
+                    type: integer
+                    example: 20
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/health:
+    get:
+      tags:
+        - health
+      summary: 健康检查
+      description: 检查API服务的运行状态
+      operationId: healthCheck
+      responses:
+        '200':
+          description: 服务正常运行
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  database:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "connected"
+                      path:
+                        type: string
+                        example: "data/tts_history.db"
+                  tts_engine:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "ready"
+                      name:
+                        type: string
+                        example: "edge-tts"
+
+  /api/v1/voices:
+    get:
+      tags:
+        - tts
+      summary: 获取可用音色列表
+      description: 获取所有预设的中文音色列表
+      operationId: getVoices
+      responses:
+        '200':
+          description: 成功获取音色列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  voices:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VoiceInfo'
+              example:
+                voices:
+                  - name: "晓晓-女声"
+                    voice_id: "zh-CN-XiaoxiaoNeural"
+                    description: "温柔女声"
+                    default: true
+                  - name: "云扬-男声"
+                    voice_id: "zh-CN-YunyangNeural"
+                    description: "成熟男声"
+                    default: false
+                  - name: "晓悠-童声"
+                    voice_id: "zh-CN-XiaoyouNeural"
+                    description: "儿童女声"
+                    default: false
+
+components:
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: 任务唯一标识符(UUID)
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+  schemas:
+    TaskCreateRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          description: 要转换的文本内容
+          example: "你好,世界!这是一个测试。"
+        voice_name:
+          type: string
+          default: "晓晓-女声"
+          enum:
+            - "晓晓-女声"
+            - "云扬-男声"
+            - "晓悠-童声"
+            - "晓伊-年轻女声"
+            - "云健-沉稳男声"
+          description: 音色名称
+        rate:
+          type: number
+          format: float
+          default: 1.0
+          minimum: 0.5
+          maximum: 2.0
+          description: 语速倍率 (0.5-2.0)
+        pitch:
+          type: number
+          format: float
+          default: 1.0
+          minimum: 0.5
+          maximum: 2.0
+          description: 音调倍率 (0.5-2.0)
+        volume:
+          type: number
+          format: float
+          default: 1.0
+          minimum: 0.0
+          maximum: 1.0
+          description: 音量倍率 (0.0-1.0)
+
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          description: 任务唯一标识符
+        text:
+          type: string
+          description: 输入的文本内容
+        voice_name:
+          type: string
+          description: 使用的音色名称
+        rate:
+          type: number
+          format: float
+          description: 语速倍率
+        pitch:
+          type: number
+          format: float
+          description: 音调倍率
+        volume:
+          type: number
+          format: float
+          description: 音量倍率
+        status:
+          type: string
+          enum:
+            - queued
+            - processing
+            - completed
+            - failed
+            - cancelled
+          description: 任务状态
+        progress:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 100.0
+          description: 进度百分比
+        file_path:
+          type: string
+          format: uri
+          nullable: true
+          description: 生成的音频文件路径
+        error_message:
+          type: string
+          nullable: true
+          description: 错误信息(如果失败)
+        created_at:
+          type: string
+          format: date-time
+          description: 任务创建时间
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 任务开始时间
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 任务完成时间
+
+    QueueStatus:
+      type: object
+      properties:
+        queued_count:
+          type: integer
+          minimum: 0
+          description: 排队中的任务数量
+        processing_count:
+          type: integer
+          minimum: 0
+          maximum: 1
+          description: 正在处理的任务数量(最多1个)
+        completed_count:
+          type: integer
+          minimum: 0
+          description: 已完成的任务数量
+        current_task:
+          $ref: '#/components/schemas/TaskResponse'
+          nullable: true
+          description: 当前正在处理的任务
+        max_queue_size:
+          type: integer
+          example: 10
+          description: 队列最大容量
+
+    HistoryRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 历史记录ID
+        task_id:
+          type: string
+          format: uuid
+          description: 关联的任务ID
+        text_summary:
+          type: string
+          maxLength: 100
+          description: 文本摘要(前100字符)
+        voice_params:
+          type: object
+          properties:
+            voice_name:
+              type: string
+            voice_id:
+              type: string
+            rate:
+              type: number
+            pitch:
+              type: number
+            volume:
+              type: number
+          description: 语音参数快照
+        created_at:
+          type: string
+          format: date-time
+          description: 生成时间戳
+        file_path:
+          type: string
+          format: uri
+          description: 音频文件路径
+        file_size:
+          type: integer
+          description: 文件大小(字节)
+        status:
+          type: string
+          enum:
+            - completed
+          description: 任务状态
+
+    VoiceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 音色显示名称
+          example: "晓晓-女声"
+        voice_id:
+          type: string
+          description: edge-tts音色ID
+          example: "zh-CN-XiaoxiaoNeural"
+        description:
+          type: string
+          description: 音色描述
+          example: "温柔女声"
+        default:
+          type: boolean
+          description: 是否为默认音色
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 错误类型
+          example: "ValidationError"
+        message:
+          type: string
+          description: 错误消息
+          example: "text field is required"
+        details:
+          type: object
+          description: 额外的错误详情
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: 错误的请求
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "BadRequest"
+            message: "Cannot cancel task that is already processing"
+
+    ValidationError:
+      description: 请求验证失败
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "ValidationError"
+            message: "Validation failed"
+            details:
+              text:
+                - "ensure this value has at least 1 characters"
+              rate:
+                - "ensure this value is greater than or equal to 0.5"
+
+    NotFound:
+      description: 资源未找到
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "NotFound"
+            message: "Task not found"
+            task_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    QueueFull:
+      description: 任务队列已满
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "QueueFull"
+            message: "Task queue is full (max 10 tasks), please try again later"
+            max_size: 10
+
+    InternalError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "InternalError"
+            message: "An unexpected error occurred"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API密钥认证(可选)。
+
+        当前版本不需要认证,但保留用于未来扩展。
+
+security: []
