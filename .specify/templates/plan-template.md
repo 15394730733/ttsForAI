@@ -17,21 +17,36 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Backend/Version**: Python 3.12+ (最新稳定版)
+**Frontend/Version**: Vue 3.x + TypeScript 5.x + Vite 5.x
+**Primary Dependencies**: FastAPI (后端), Pinia/Axios (前端), edge-tts/pyttsx3/gTTS (TTS引擎)
+**Storage**: [如需要, 例如: 本地文件缓存 / SQLite / PostgreSQL 或 N/A]
+**Testing**: pytest (后端), Vitest (前端) 或 NEEDS CLARIFICATION
+**Target Platform**: 现代浏览器 (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+**Project Type**: web (前后端分离架构)
+**Performance Goals**: [领域特定, 例如: TTS生成响应时间 < 2秒, 并发支持50+用户 或 NEEDS CLARIFICATION]
+**Constraints**: [领域特定, 例如: 单次文本转换最大长度5000字符, 音频文件大小限制 < 10MB 或 NEEDS CLARIFICATION]
+**Scale/Scope**: [领域特定, 例如: 日活用户100+, 支持5种语言, 10种音色 或 NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+根据 `.specify/memory/constitution.md` 中的五大核心原则进行合规性检查:
+
+- [ ] **I. 简单至上**: 架构设计是否保持简洁? 是否有不必要的复杂性?
+- [ ] **II. 用户体验优先**: 是否提供了流畅直观的用户体验? 界面是否响应迅速?
+- [ ] **III. 技术栈现代化**: 是否使用了最新稳定版本的Vue 3.x + TypeScript 5.x + Vite 5.x (前端) 和 Python 3.12+ + FastAPI (后端)?
+- [ ] **IV. 接口契约优先**: 是否定义了清晰的API契约? 是否遵循OpenAPI 3.0规范?
+- [ ] **V. 可测试性**: 核心逻辑是否易于测试? 是否有相应的测试计划?
+
+**Technology Stack Requirements Check:**
+
+- [ ] 前端技术栈: Vue 3.x, TypeScript 5.x, Vite 5.x
+- [ ] 后端技术栈: Python 3.12+, FastAPI (最新稳定版)
+- [ ] TTS引擎: edge-tts / pyttsx3 / gTTS (根据需求选择)
+- [ ] API标准: RESTful API, 遵循OpenAPI 3.0规范
+- [ ] 代码规范: ESLint + Prettier (前端), Black + Ruff + mypy (后端)
 
 ## Project Structure
 
