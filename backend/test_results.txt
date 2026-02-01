@@ -1,0 +1,211 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-9.0.2, pluggy-1.6.0 -- E:\ai编程实战营\tts\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: E:\ai编程实战营\tts\backend
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 151 items
+
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_get_history_response_status PASSED [  0%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_get_history_response_structure PASSED [  1%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_history_record_fields PASSED [  1%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_history_pagination PASSED [  2%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_history_default_limit PASSED [  3%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_history_openapi_spec PASSED [  3%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_delete_history_not_found PASSED [  4%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_clear_history_response_status PASSED [  5%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_clear_history_response_structure PASSED [  5%]
+tests/contract/test_history_api.py::TestHistoryAPIContract::test_delete_history_response_structure PASSED [  6%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_response_status PASSED [  7%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_response_structure PASSED [  7%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_field_types PASSED [  8%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_values_are_valid PASSED [  9%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_openapi_spec PASSED [  9%]
+tests/contract/test_queue_api.py::TestQueueAPIContract::test_queue_status_consistency PASSED [ 10%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_health_check_contract PASSED [ 11%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_health_detailed_contract PASSED [ 11%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_contract PASSED [ 12%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_validation_text_too_short PASSED [ 13%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_validation_text_too_long PASSED [ 13%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_validation_rate_range PASSED [ 14%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_validation_pitch_range PASSED [ 15%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_create_task_validation_volume_range PASSED [ 15%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_get_task_contract PASSED [ 16%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_get_task_not_found PASSED [ 17%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_cancel_task_contract PASSED [ 17%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_download_audio_contract PASSED [ 18%]
+tests/contract/test_tts_api.py::TestTTSAPIContract::test_openapi_schema_exists PASSED [ 19%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_response_status PASSED [ 19%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_response_structure PASSED [ 20%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_response_fields PASSED [ 21%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_contains_all_presets PASSED [ 21%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_default_flag PASSED [ 22%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_ids_are_valid PASSED [ 23%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_no_duplicates PASSED [ 23%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_openapi_spec PASSED [ 24%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_response_consistency PASSED [ 25%]
+tests/contract/test_voices_api.py::TestVoicesAPIContract::test_voices_caching_headers PASSED [ 25%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_params_passed_to_edge_tts PASSED [ 26%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_boundary_rate_values PASSED [ 27%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_boundary_pitch_values PASSED [ 27%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_boundary_volume_values PASSED [ 28%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_invalid_rate_below_minimum PASSED [ 29%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_invalid_rate_above_maximum PASSED [ 29%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_invalid_pitch_below_minimum PASSED [ 30%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_invalid_volume_above_maximum PASSED [ 31%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_invalid_voice_name PASSED [ 31%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_chinese_voice_name_conversion FAILED [ 32%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_all_preset_voices SKIPPED [ 33%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_default_parameters SKIPPED [ 33%]
+tests/integration/test_params_flow.py::TestParamsIntegration::test_multiple_parameters_combination SKIPPED [ 34%]
+tests/integration/test_simple_integration.py::TestSimpleIntegration::test_create_task_endpoint PASSED [ 35%]
+tests/integration/test_simple_integration.py::TestSimpleIntegration::test_create_task_validation PASSED [ 35%]
+tests/integration/test_simple_integration.py::TestSimpleIntegration::test_get_task_not_found PASSED [ 36%]
+tests/integration/test_simple_integration.py::TestSimpleIntegration::test_health_check PASSED [ 37%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_complete_tts_flow SKIPPED) [ 37%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_multiple_tasks_queue_processing FAILED [ 38%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_task_creation_with_all_params FAILED [ 39%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_task_not_found_error PASSED [ 39%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_invalid_voice_name FAILED [ 40%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_text_sanitization PASSED [ 41%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_default_parameters FAILED [ 41%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_cancel_queued_task FAILED [ 42%]
+tests/integration/test_tts_flow.py::TestTTSIntegration::test_database_persistence FAILED [ 43%]
+tests/unit/test_history_service.py::TestHistoryService::test_init PASSED [ 43%]
+tests/unit/test_history_service.py::TestHistoryService::test_create_history_from_completed_task PASSED [ 44%]
+tests/unit/test_history_service.py::TestHistoryService::test_create_history_from_incomplete_task PASSED [ 45%]
+tests/unit/test_history_service.py::TestHistoryService::test_create_history_text_summary PASSED [ 45%]
+tests/unit/test_history_service.py::TestHistoryService::test_get_history_list PASSED [ 46%]
+tests/unit/test_history_service.py::TestHistoryService::test_get_history_list_with_pagination PASSED [ 47%]
+tests/unit/test_history_service.py::TestHistoryService::test_get_history_by_id PASSED [ 47%]
+tests/unit/test_history_service.py::TestHistoryService::test_get_history_by_task_id PASSED [ 48%]
+tests/unit/test_history_service.py::TestHistoryService::test_delete_history PASSED [ 49%]
+tests/unit/test_history_service.py::TestHistoryService::test_delete_history_with_file PASSED [ 49%]
+tests/unit/test_history_service.py::TestHistoryService::test_get_history_count PASSED [ 50%]
+tests/unit/test_history_service.py::TestHistoryService::test_auto_cleanup_old_records PASSED [ 50%]
+tests/unit/test_param_validation.py::TestRateValidation::test_valid_rate PASSED [ 51%]
+tests/unit/test_param_validation.py::TestRateValidation::test_rate_default PASSED [ 52%]
+tests/unit/test_param_validation.py::TestRateValidation::test_rate_below_minimum PASSED [ 52%]
+tests/unit/test_param_validation.py::TestRateValidation::test_rate_above_maximum PASSED [ 53%]
+tests/unit/test_param_validation.py::TestRateValidation::test_rate_boundary_values PASSED [ 54%]
+tests/unit/test_param_validation.py::TestRateValidation::test_rate_type_error PASSED [ 54%]
+tests/unit/test_param_validation.py::TestPitchValidation::test_valid_pitch PASSED [ 55%]
+tests/unit/test_param_validation.py::TestPitchValidation::test_pitch_default PASSED [ 56%]
+tests/unit/test_param_validation.py::TestPitchValidation::test_pitch_below_minimum PASSED [ 56%]
+tests/unit/test_param_validation.py::TestPitchValidation::test_pitch_above_maximum PASSED [ 57%]
+tests/unit/test_param_validation.py::TestPitchValidation::test_pitch_boundary_values PASSED [ 58%]
+tests/unit/test_param_validation.py::TestVolumeValidation::test_valid_volume PASSED [ 58%]
+tests/unit/test_param_validation.py::TestVolumeValidation::test_volume_default PASSED [ 59%]
+tests/unit/test_param_validation.py::TestVolumeValidation::test_volume_below_minimum PASSED [ 60%]
+tests/unit/test_param_validation.py::TestVolumeValidation::test_volume_above_maximum PASSED [ 60%]
+tests/unit/test_param_validation.py::TestVolumeValidation::test_volume_boundary_values PASSED [ 61%]
+tests/unit/test_param_validation.py::TestVoiceValidation::test_valid_voice_by_name PASSED [ 62%]
+tests/unit/test_param_validation.py::TestVoiceValidation::test_valid_voice_by_id PASSED [ 62%]
+tests/unit/test_param_validation.py::TestVoiceValidation::test_voice_default PASSED [ 63%]
+tests/unit/test_param_validation.py::TestVoiceValidation::test_invalid_voice PASSED [ 64%]
+tests/unit/test_param_validation.py::TestVoiceValidation::test_all_preset_voices PASSED [ 64%]
+tests/unit/test_param_validation.py::TestCombinedParameters::test_all_parameters_valid PASSED [ 65%]
+tests/unit/test_param_validation.py::TestCombinedParameters::test_all_defaults PASSED [ 66%]
+tests/unit/test_param_validation.py::TestCombinedParameters::test_multiple_invalid_parameters PASSED [ 66%]
+tests/unit/test_param_validation.py::TestTextValidation::test_text_with_parameters PASSED [ 67%]
+tests/unit/test_param_validation.py::TestTextValidation::test_null_bytes_in_text PASSED [ 68%]
+tests/unit/test_queue_service.py::TestQueueService::test_init PASSED     [ 68%]
+tests/unit/test_queue_service.py::TestQueueService::test_enqueue_task PASSED [ 69%]
+tests/unit/test_queue_service.py::TestQueueService::test_enqueue_multiple_tasks PASSED [ 70%]
+tests/unit/test_queue_service.py::TestQueueService::test_enqueue_full_queue PASSED [ 70%]
+tests/unit/test_queue_service.py::TestQueueService::test_dequeue_task PASSED [ 71%]
+tests/unit/test_queue_service.py::TestQueueService::test_dequeue_empty_queue PASSED [ 72%]
+tests/unit/test_queue_service.py::TestQueueService::test_get_queue_size PASSED [ 72%]
+tests/unit/test_queue_service.py::TestQueueService::test_is_empty PASSED [ 73%]
+tests/unit/test_queue_service.py::TestQueueService::test_is_full PASSED  [ 74%]
+tests/unit/test_queue_service.py::TestQueueService::test_get_status PASSED [ 74%]
+tests/unit/test_queue_service.py::TestQueueService::test_increment_completed PASSED [ 75%]
+tests/unit/test_queue_service.py::TestQueueService::test_increment_failed PASSED [ 76%]
+tests/unit/test_queue_service.py::TestQueueService::test_set_current_task PASSED [ 76%]
+tests/unit/test_queue_service.py::TestQueueService::test_clear_queue PASSED [ 77%]
+tests/unit/test_storage_service.py::TestStorageService::test_init PASSED [ 78%]
+tests/unit/test_storage_service.py::TestStorageService::test_generate_file_path PASSED [ 78%]
+tests/unit/test_storage_service.py::TestStorageService::test_generate_file_path_custom_extension PASSED [ 79%]
+tests/unit/test_storage_service.py::TestStorageService::test_save_file PASSED [ 80%]
+tests/unit/test_storage_service.py::TestStorageService::test_save_file_creates_directory PASSED [ 80%]
+tests/unit/test_storage_service.py::TestStorageService::test_get_file PASSED [ 81%]
+tests/unit/test_storage_service.py::TestStorageService::test_get_file_not_found PASSED [ 82%]
+tests/unit/test_storage_service.py::TestStorageService::test_file_exists PASSED [ 82%]
+tests/unit/test_storage_service.py::TestStorageService::test_get_file_size PASSED [ 83%]
+tests/unit/test_storage_service.py::TestStorageService::test_get_file_size_not_found PASSED [ 84%]
+tests/unit/test_storage_service.py::TestStorageService::test_delete_file PASSED [ 84%]
+tests/unit/test_storage_service.py::TestStorageService::test_delete_file_not_found PASSED [ 85%]
+tests/unit/test_storage_service.py::TestStorageService::test_list_files PASSED [ 86%]
+tests/unit/test_storage_service.py::TestStorageService::test_get_total_size PASSED [ 86%]
+tests/unit/test_storage_service.py::TestStorageService::test_cleanup_old_files PASSED [ 87%]
+tests/unit/test_storage_service.py::TestStorageService::test_clear_all PASSED [ 88%]
+tests/unit/test_task_model.py::TestTaskModel::test_create_task PASSED    [ 88%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_defaults PASSED  [ 89%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_status_transitions PASSED [ 90%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_failed_status PASSED [ 90%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_cancelled_status PASSED [ 91%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_to_dict PASSED   [ 92%]
+tests/unit/test_task_model.py::TestTaskModel::test_task_repr PASSED      [ 92%]
+tests/unit/test_task_model.py::TestTaskModel::test_query_task_by_id PASSED [ 93%]
+tests/unit/test_task_model.py::TestTaskModel::test_query_tasks_by_status PASSED [ 94%]
+tests/unit/test_tts_service.py::TestTTSService::test_init PASSED         [ 94%]
+tests/unit/test_tts_service.py::TestTTSService::test_generate_audio_success PASSED [ 95%]
+tests/unit/test_tts_service.py::TestTTSService::test_generate_audio_with_progress_callback PASSED [ 96%]
+tests/unit/test_tts_service.py::TestTTSService::test_generate_audio_failure PASSED [ 96%]
+tests/unit/test_tts_service.py::TestTTSService::test_generate_audio_simple PASSED [ 97%]
+tests/unit/test_tts_service.py::TestTTSService::test_get_audio_file_path PASSED [ 98%]
+tests/unit/test_tts_service.py::TestTTSService::test_audio_file_exists PASSED [ 98%]
+tests/unit/test_tts_service.py::TestTTSService::test_delete_audio_file PASSED [ 99%]
+tests/unit/test_tts_service.py::TestTTSService::test_generate_audio_params_passed_to_edge_tts PASSED [100%]
+
+================================== FAILURES ===================================
+__________ TestParamsIntegration.test_chinese_voice_name_conversion ___________
+tests\integration\test_params_flow.py:218: in test_chinese_voice_name_conversion
+    assert response.status_code == 201
+E   assert 429 == 201
+E    +  where 429 = <Response [429 Too Many Requests]>.status_code
+___________ TestTTSIntegration.test_multiple_tasks_queue_processing ___________
+tests\integration\test_tts_flow.py:101: in test_multiple_tasks_queue_processing
+    assert response.status_code == 201
+E   assert 429 == 201
+E    +  where 429 = <Response [429 Too Many Requests]>.status_code
+____________ TestTTSIntegration.test_task_creation_with_all_params ____________
+tests\integration\test_tts_flow.py:129: in test_task_creation_with_all_params
+    assert response.status_code == 201
+E   assert 429 == 201
+E    +  where 429 = <Response [429 Too Many Requests]>.status_code
+_________________ TestTTSIntegration.test_invalid_voice_name __________________
+tests\integration\test_tts_flow.py:160: in test_invalid_voice_name
+    assert response.status_code == 400
+E   assert 422 == 400
+E    +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+_________________ TestTTSIntegration.test_default_parameters __________________
+tests\integration\test_tts_flow.py:195: in test_default_parameters
+    assert response.status_code == 201
+E   assert 429 == 201
+E    +  where 429 = <Response [429 Too Many Requests]>.status_code
+_________________ TestTTSIntegration.test_cancel_queued_task __________________
+tests\integration\test_tts_flow.py:214: in test_cancel_queued_task
+    task_id = create_response.json()["task_id"]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'task_id'
+________________ TestTTSIntegration.test_database_persistence _________________
+tests\integration\test_tts_flow.py:243: in test_database_persistence
+    task_id = api_response.json()["task_id"]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'task_id'
+=========================== short test summary info ===========================
+FAILED tests/integration/test_params_flow.py::TestParamsIntegration::test_chinese_voice_name_conversion - assert 429 == 201
+ +  where 429 = <Response [429 Too Many Requests]>.status_code
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_multiple_tasks_queue_processing - assert 429 == 201
+ +  where 429 = <Response [429 Too Many Requests]>.status_code
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_task_creation_with_all_params - assert 429 == 201
+ +  where 429 = <Response [429 Too Many Requests]>.status_code
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_invalid_voice_name - assert 422 == 400
+ +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_default_parameters - assert 429 == 201
+ +  where 429 = <Response [429 Too Many Requests]>.status_code
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_cancel_queued_task - KeyError: 'task_id'
+FAILED tests/integration/test_tts_flow.py::TestTTSIntegration::test_database_persistence - KeyError: 'task_id'
+================== 7 failed, 140 passed, 4 skipped in 7.22s ===================

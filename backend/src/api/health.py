@@ -3,9 +3,10 @@ Health check API endpoints.
 
 Provides system health status and connectivity checks.
 """
-from fastapi import APIRouter
+
+from fastapi import APIRouter, Depends
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, text
 
 from ..core.database import get_db
 from ..core.logger import logger
@@ -55,7 +56,7 @@ async def detailed_health_check(db: AsyncSession = Depends(get_db)):
 
     # Check database connectivity
     try:
-        result = await db.execute(select(func.count()).select_from(text("sqlite_master")))
+        await db.execute(select(func.count()).select_from(text("sqlite_master")))
         health_status["database"] = {
             "status": "connected",
             "message": "Database connection successful",

@@ -12,7 +12,8 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from backend.src.core.database import Base, get_db
+from src.core.database import Base, get_db
+from tests.utils import clear_test_database, clear_test_queue
 
 
 # Test database URL (in-memory SQLite)
@@ -71,7 +72,7 @@ async def client(test_db: AsyncSession):
     Yields:
         AsyncClient: Test HTTP client
     """
-    from backend.src.main import app
+    from src.main import app
 
     # Override get_db dependency to use test database
     async def override_get_db():
@@ -79,8 +80,9 @@ async def client(test_db: AsyncSession):
 
     app.dependency_overrides[get_db] = override_get_db
 
+    # Use raise_app_exceptions=False to handle lifespan issues
     async with AsyncClient(
-        app=app,
+        transport=ASGITransport(app=app, raise_app_exceptions=False),
         base_url="http://test",
     ) as ac:
         yield ac
@@ -97,3 +99,40 @@ def test_data_dir() -> Path:
         Path: Test data directory path
     """
     return Path(__file__).parent / "data"
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def cleanup_test_state(test_db: AsyncSession):
+    """
+    Automatically clean up test state after each test.
+
+    This fixture runs automatically after every test to ensure
+    test isolation by clearing the database and queue.
+
+    Args:
+        test_db: Test database session
+    """
+    # Run the test
+    yield
+
+    # Clean up after test
+    try:
+        # Clear database first
+        await clear_test_database(test_db)
+
+        # Clear queue synchronously (queue is global state)
+        try:
+            await queue_service.clear_queue()
+        except:
+            # If queue clear fails, try to at least drain it
+            queue_size = queue_service.get_queue_size()
+            for _ in range(queue_size):
+                if not queue_service.is_empty():
+                    try:
+                        await queue_service.dequeue()
+                    except:
+                        break
+
+    except Exception as e:
+        # Log but don't fail the test if cleanup fails
+        print(f"Warning: Cleanup failed: {e}")

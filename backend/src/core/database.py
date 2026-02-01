@@ -3,7 +3,8 @@ Database connection and session management.
 
 Provides async SQLAlchemy engine and session management for SQLite database.
 """
-from typing import AsyncGenerator
+
+from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
@@ -27,6 +28,7 @@ AsyncSessionLocal = async_sessionmaker(
 
 class Base(DeclarativeBase):
     """Base class for all ORM models."""
+
     pass
 
 
