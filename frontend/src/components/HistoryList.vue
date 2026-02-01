@@ -97,7 +97,10 @@ async function refresh() {
 
 async function downloadAudio(record: HistoryRecord) {
   try {
-    const filename = `tts_${record.task_id}.mp3`
+    // Use filename from record, fallback to task_id if not available
+    const filename = record.filename
+      ? `${record.filename}.mp3`
+      : `tts_${record.task_id}.mp3`
     await historyStore.downloadAudio(record.task_id, filename)
     ElMessage.success('下载成功')
   } catch (err) {

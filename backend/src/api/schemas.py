@@ -25,6 +25,10 @@ class TaskCreateRequest(BaseModel):
     )
     pitch: float = Field(default=1.0, ge=0.5, le=2.0, description="Pitch multiplier")
     volume: float = Field(default=1.0, ge=0.0, le=1.0, description="Volume level")
+    filename: str | None = Field(
+        default=None,
+        description="Custom filename for the audio file (without extension)",
+    )
 
     @field_validator("text")
     @classmethod
@@ -76,6 +80,7 @@ class TaskResponse(BaseModel):
     status: str
     progress: int
     file_path: str | None = None
+    filename: str | None = None  # Actual filename used (without extension)
     error_message: str | None = None
     created_at: str
     started_at: str | None = None
@@ -103,10 +108,15 @@ class HistoryResponse(BaseModel):
     voice_params: str
     created_at: str
     file_path: str
+    filename: str | None = None  # Actual filename used (without extension)
     file_size: int
     status: str
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        exclude_unset=False,  # Include fields even if not set
+        exclude_none=False,  # Include fields even if value is None
+    )
 
 
 class HistoryListResponse(BaseModel):

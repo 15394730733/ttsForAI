@@ -68,7 +68,9 @@ class Task(Base, TimestampMixin):
 
     # Output fields
     file_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    filename: Mapped[str | None] = mapped_column(String(255), nullable=True)  # Actual filename used (without .mp3 extension)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    custom_filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     # Timestamps
     started_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

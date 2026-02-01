@@ -47,6 +47,7 @@ class History(Base, TimestampMixin):
 
     # File info
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    filename: Mapped[str | None] = mapped_column(String(255), nullable=True)  # Actual filename used (without extension)
     file_size: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # Status
@@ -69,6 +70,7 @@ class History(Base, TimestampMixin):
             "voice_params": self.voice_params,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "file_path": self.file_path,
+            "filename": self.filename,
             "file_size": self.file_size,
             "status": self.status,
         }

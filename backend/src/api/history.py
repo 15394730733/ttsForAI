@@ -46,6 +46,7 @@ async def get_history(
                 voice_params=record.voice_params,
                 created_at=record.created_at.isoformat() if record.created_at else "",
                 file_path=record.file_path,
+                filename=getattr(record, 'filename', None),  # Explicitly get filename
                 file_size=record.file_size,
                 status=record.status,
             )

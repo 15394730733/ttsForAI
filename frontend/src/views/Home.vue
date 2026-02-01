@@ -20,6 +20,21 @@
               <!-- 文本输入 -->
               <TTSInput v-model="text" />
 
+              <!-- 文件名设置 -->
+              <el-form-item label="文件名（可选）">
+                <el-input
+                  v-model="customFilename"
+                  placeholder="留空则自动使用文本前10个字作为文件名"
+                  clearable
+                  maxlength="100"
+                  show-word-limit
+                >
+                  <template #append>
+                    <el-button @click="generateDefaultFilename">自动生成</el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+
               <!-- 语音参数 -->
               <VoiceParams
                 v-model:voice-name="voiceName"
@@ -119,11 +134,12 @@ const voiceName = ref('zh-CN-XiaoxiaoNeural')
 const rate = ref(1.0)
 const pitch = ref(1.0)
 const volume = ref(1.0)
+const customFilename = ref('')
 
 // State
 const isGenerating = ref(false)
 const currentTask = ref<any>(null)
-const generatedAudio = ref<{ url: string; filename: string } | null>(null)
+const generatedAudio = ref<{ url: string; filename: string; taskId: string } | null>(null)
 
 // Computed
 const canGenerate = computed(() => {
@@ -133,6 +149,23 @@ const canGenerate = computed(() => {
 // Poll task status
 let taskPollingTimer: number | null = null
 
+// Generate default filename from text
+function generateDefaultFilename() {
+  if (!text.value.trim()) {
+    ElMessage.warning('请先输入文本')
+    return
+  }
+  // Clean text: remove newlines, tabs, and extra spaces
+  const cleanText = text.value
+    .replace(/[\n\r\t]+/g, ' ')  // Replace newlines/tabs with space
+    .replace(/\s+/g, ' ')         // Replace multiple spaces with single space
+    .trim()                       // Remove leading/trailing spaces
+
+  // Take first 10 characters
+  customFilename.value = cleanText.substring(0, 10)
+  ElMessage.success('已自动生成文件名')
+}
+
 async function generateAudio() {
   if (!canGenerate.value) return
 
@@ -140,6 +173,17 @@ async function generateAudio() {
   generatedAudio.value = null
 
   try {
+    // Determine filename: use custom if provided, otherwise use first 10 chars of text
+    let filename = customFilename.value.trim()
+    if (!filename) {
+      // Clean text before generating filename
+      const cleanText = text.value
+        .replace(/[\n\r\t]+/g, ' ')  // Replace newlines/tabs with space
+        .replace(/\s+/g, ' ')         // Replace multiple spaces with single space
+        .trim()
+      filename = cleanText.substring(0, 10)
+    }
+
     // Log request data for debugging
     const requestData = {
       text: text.value,
@@ -147,6 +191,7 @@ async function generateAudio() {
       rate: rate.value,
       pitch: pitch.value,
       volume: volume.value,
+      filename: filename,
     }
     console.log('Creating TTS task with data:', requestData)
 
@@ -173,10 +218,15 @@ function startTaskPolling(taskId: string) {
       if (task.status === 'completed') {
         stopTaskPolling()
 
-        // Generate download URL
+        // Use filename from backend, fallback to task_id if not available
+        const downloadFilename = task.filename
+          ? `${task.filename}.mp3`
+          : `tts_${taskId}.mp3`
+
         generatedAudio.value = {
           url: `/tts/download/${taskId}`,
-          filename: `tts_${taskId}.mp3`,
+          filename: downloadFilename,
+          taskId: taskId,  // Store taskId for download
         }
 
         ElMessage.success('语音生成成功！')
@@ -223,7 +273,7 @@ async function downloadAudio() {
   if (!generatedAudio.value) return
 
   try {
-    const blob = await ttsService.downloadAudio(currentTask.value.task_id)
+    const blob = await ttsService.downloadAudio(generatedAudio.value.taskId)
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

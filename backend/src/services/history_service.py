@@ -79,6 +79,7 @@ class HistoryService:
                 text_summary=text_summary,
                 voice_params=voice_params,
                 file_path=task.file_path,
+                filename=task.filename,  # Include filename from task
                 file_size=file_size,
                 status="active",
             )

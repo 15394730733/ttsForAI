@@ -98,7 +98,45 @@ class TTSService:
             )
 
             # Generate output file path
-            output_filename = f"{task.task_id}.mp3"
+            # Use custom filename if provided, otherwise use task_id
+            if task.custom_filename:
+                # Log original filename for debugging
+                log.debug(
+                    f"Task {task_id}: Original custom_filename: {repr(task.custom_filename)}"
+                )
+
+                # Sanitize custom filename - remove invalid characters
+                import re
+                # Remove newlines, tabs, and special characters
+                safe_filename = task.custom_filename.strip()
+                # Remove newlines, tabs, and replace with space
+                safe_filename = safe_filename.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+                # Remove multiple spaces
+                safe_filename = re.sub(r'\s+', ' ', safe_filename)
+                # Remove any file extension if present
+                if '.' in safe_filename:
+                    safe_filename = safe_filename.rsplit('.', 1)[0]
+                # Remove special characters (keep only alphanumeric, Chinese, and basic symbols)
+                safe_filename = re.sub(r'[^\w\s\u4e00-\u9fff\-_.]', '', safe_filename)
+                # Remove leading/trailing spaces and dots
+                safe_filename = safe_filename.strip().strip('.')
+                # Limit length
+                if len(safe_filename) > 200:
+                    safe_filename = safe_filename[:200]
+
+                log.debug(
+                    f"Task {task_id}: Sanitized filename: {repr(safe_filename)}"
+                )
+
+                if safe_filename:
+                    output_filename = f"{safe_filename}.mp3"
+                else:
+                    log.warning(
+                        f"Task {task_id}: Sanitization resulted in empty string, using task_id"
+                    )
+                    output_filename = f"{task.task_id}.mp3"
+            else:
+                output_filename = f"{task.task_id}.mp3"
             output_path = self.output_dir / output_filename
 
             log.debug(f"Task {task_id}: Generating audio to {output_path}")
@@ -129,6 +167,8 @@ class TTSService:
             task.progress = 100
             task.completed_at = datetime.now()
             task.file_path = str(output_path)
+            # Store filename without extension for frontend use
+            task.filename = output_path.stem  # filename without .mp3 extension
 
             if progress_callback:
                 await progress_callback(100)

@@ -12,6 +12,7 @@ export interface HistoryRecord {
   voice_params: string
   created_at: string
   file_path: string
+  filename: string | null  // Actual filename used (without extension)
   file_size: number
   status: string
 }

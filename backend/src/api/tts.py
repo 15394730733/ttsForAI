@@ -94,6 +94,7 @@ async def create_task(
         rate=request.rate,
         pitch=request.pitch,
         volume=request.volume,
+        custom_filename=request.filename,
         status=TaskStatus.QUEUED,
         progress=0,
     )
@@ -118,6 +119,7 @@ async def create_task(
         status=task.status,
         progress=task.progress,
         file_path=task.file_path,
+        filename=task.filename,
         error_message=task.error_message,
         created_at=task.created_at.isoformat() if task.created_at else "",
         started_at=task.started_at.isoformat() if task.started_at else None,
@@ -161,6 +163,7 @@ async def get_task(
         status=task.status,
         progress=task.progress,
         file_path=task.file_path,
+        filename=task.filename,
         error_message=task.error_message,
         created_at=task.created_at.isoformat() if task.created_at else "",
         started_at=task.started_at.isoformat() if task.started_at else None,

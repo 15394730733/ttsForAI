@@ -25,6 +25,7 @@ export interface TaskCreateRequest {
   rate?: number
   pitch?: number
   volume?: number
+  filename?: string
 }
 
 /**
@@ -40,6 +41,7 @@ export interface Task {
   status: TaskStatus
   progress: number
   file_path: string | null
+  filename: string | null  // Actual filename used (without extension)
   error_message: string | null
   created_at: string
   started_at: string | null
