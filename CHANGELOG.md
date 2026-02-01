@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-01
+
+### Added
+
+#### 文件名管理功能
+- ✨ **自定义文件名** - 支持用户手动输入音频文件名
+- 🔄 **自动生成文件名** - 一键提取文本前10个字符作为文件名
+- 🧹 **文件名清理** - 自动去除换行符、制表符和特殊字符，确保文件名合法
+- 💾 **文件名存储** - 数据库新增filename字段，保存实际使用的文件名
+- 📥 **下载优化** - 主页和历史记录下载均使用自定义文件名
+
+#### 技术改进
+- 🔧 **后端模型** - Task和History模型新增filename字段
+- 📊 **API响应** - TTS和History API响应包含filename字段
+- 🎯 **文件名验证** - 前端输入验证和后端文件名清理双重保障
+- 🛠️ **下载功能修复** - 修复主页下载按钮点击无效的问题
+
+### Fixed
+- 🐛 修复主页下载功能在任务完成后无法下载的问题
+- 🐛 修复历史记录下载文件名显示为tts_xxx.mp3的问题
+- 🐛 修复文件名包含非法字符导致文件保存失败的问题
+- 🐛 修复Pydantic序列化未正确返回filename字段的问题
+
+### Changed
+- 📝 前端类型定义添加filename字段
+- 🗄️ 数据库schema升级（tasks和history表添加filename列）
+- 🎨 用户界面优化，添加文件名输入和自动生成按钮
+
+---
+
 ## [1.0.0] - 2026-01-29
 
 ### Added
