@@ -13,7 +13,7 @@ const http = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000, // 30 seconds
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
   },
 })
 
@@ -42,10 +42,13 @@ http.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response
 
+      // Log full error details for debugging
+      console.error(`HTTP ${status}:`, data)
+
       // Server responded with error status
       switch (status) {
         case 400:
-          console.error('Bad Request:', data?.message || 'Invalid request')
+          console.error('Bad Request:', data?.message || 'Invalid request', data)
           break
         case 401:
           console.error('Unauthorized: Authentication required')

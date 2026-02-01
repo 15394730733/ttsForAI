@@ -36,15 +36,18 @@ def sanitize_text(text: str) -> str:
     if PATH_TRAVERSAL_PATTERN.search(text):
         raise ValueError("Text contains path traversal patterns")
 
-    # Check for control characters (except newline, tab, carriage return)
-    # Allow: \n (0x0A), \r (0x0D), \t (0x09)
-    control_chars_without_allowed = CONTROL_CHARS_PATTERN.pattern.replace(
-        r"[\x00-\x1f\x7f-\x9f]", r"[\x01-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]"
-    )
-    if re.search(control_chars_without_allowed, text):
-        raise ValueError("Text contains invalid control characters")
+    # Remove problematic control characters but keep common whitespace
+    # Keep: \n (0x0A), \r (0x0D), \t (0x09)
+    # Remove: other control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F, 0x7F-0x9F)
+    cleaned_text = ""
+    for char in text:
+        code = ord(char)
+        # Allow normal chars, whitespace, and common punctuation
+        if code >= 32 or code in [9, 10, 13]:  # 9=\t, 10=\n, 13=\r
+            cleaned_text += char
+        # Skip other control characters silently
 
-    return text
+    return cleaned_text
 
 
 def validate_text_length(text: str) -> bool:

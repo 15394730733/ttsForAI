@@ -72,7 +72,7 @@
               </div>
 
               <!-- 生成结果 -->
-              <div v-if="generatedAudio.url" class="result-section">
+              <div v-if="generatedAudio" class="result-section">
                 <el-divider />
                 <h3>生成成功</h3>
                 <audio :src="generatedAudio.url" controls style="width: 100%; margin-top: 10px" />
@@ -140,20 +140,25 @@ async function generateAudio() {
   generatedAudio.value = null
 
   try {
-    // Create task
-    const task = await ttsService.createTask({
+    // Log request data for debugging
+    const requestData = {
       text: text.value,
       voice_name: voiceName.value,
       rate: rate.value,
       pitch: pitch.value,
       volume: volume.value,
-    })
+    }
+    console.log('Creating TTS task with data:', requestData)
+
+    // Create task
+    const task = await ttsService.createTask(requestData)
 
     currentTask.value = task
 
     // Start polling task status
     startTaskPolling(task.task_id)
   } catch (err: any) {
+    console.error('Failed to create task:', err)
     ElMessage.error(err.message || '创建任务失败')
     isGenerating.value = false
   }
